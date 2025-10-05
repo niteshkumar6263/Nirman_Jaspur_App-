@@ -1,0 +1,37 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme -->
+    <style name="Base.Theme.Nirman_Raipur_App" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Core brand colors -->
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/mid_blue</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+
+        <item name="colorSecondary">@color/light_blue</item>
+        <item name="colorOnSecondary">@color/text_primary</item>
+
+        <!-- Surface colors (cards, backgrounds) -->
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/white_translucent</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+
+        <!-- Error colors -->
+        <item name="colorError">#B3261E</item>
+        <item name="colorOnError">@color/white</item>
+
+        <!-- Status bar / navigation bar -->
+        <item name="android:statusBarColor">@color/dark_blue</item>
+        <item name="android:navigationBarColor">@color/dark_blue</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Typography overrides (optional) -->
+        <item name="android:fontFamily">@font/devanagari_stylish</item>
+    </style>
+
+    <!-- Actual app theme -->
+    <style name="Theme.Nirman_Raipur_App" parent="Base.Theme.Nirman_Raipur_App" />
+
+</resources>
