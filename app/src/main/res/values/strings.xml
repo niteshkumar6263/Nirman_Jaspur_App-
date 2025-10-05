@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">Nirman Raipur</string>
+
+    <!-- Logo / decorative -->
+    <string name="logo_desc">Nirman Raipur logo</string>
+    <string name="crane_desc">Construction crane decorative</string>
+
+    <!-- Headline / Title -->
+    <string name="app_title_hindi">निर्माण रायपुर</string>
+
+    <!-- Login card -->
+    <string name="login_heading">Welcome — Log in here</string>
+    <string name="id_hint">Aadhaar / Govt ID</string>
+    <string name="password_hint">Password / PIN</string>
+    <string name="remember_label">Remember me</string>
+    <string name="remember_desc">Remember me checkbox</string>
+    <string name="forgot">Forgot?</string>
+    <string name="login_button">Login</string>
+
+    <!-- Small helpers / disclaimers (optional) -->
+    <string name="login_disclaimer">This is a government portal UI — keep sensitive information safe.</string>
+</resources>

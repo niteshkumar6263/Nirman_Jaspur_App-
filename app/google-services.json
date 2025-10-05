@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1036894886465",
+    "project_id": "nirman-raipur",
+    "storage_bucket": "nirman-raipur.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036894886465:android:59b502c979fa4e12a944c0",
+        "android_client_info": {
+          "package_name": "com.example.nirman_raipur_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYZ3RGOb_IDNyxTJdgw8MgOgiXrFGbrz8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- base linear gradient (vertical) -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#E3F2FF"
+                android:centerColor="#67B7FF"
+                android:endColor="#0B66D0"
+                android:type="linear"/>
+        </shape>
+    </item>
+
+    <!-- large angled highlight (soft white overlay) -->
+    <item>
+        <rotate android:fromDegrees="-18">
+            <shape android:shape="rectangle">
+                <gradient
+                    android:angle="0"
+                    android:startColor="#33FFFFFF"
+                    android:endColor="#00FFFFFF"
+                    android:type="linear"/>
+            </shape>
+        </rotate>
+    </item>
+
+    <!-- subtle dark vignette edges -->
+    <item>
+        <shape>
+            <size android:width="1dp" android:height="1dp"/>
+            <gradient
+                android:type="radial"
+                android:centerX="50%"
+                android:centerY="70%"
+                android:gradientRadius="500"
+                android:startColor="#00000000"
+                android:endColor="#15000000"/>
+        </shape>
+    </item>
+
+</layer-list>

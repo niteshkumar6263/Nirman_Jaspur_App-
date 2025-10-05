@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@drawable/bg_login_advanced">
+
+    <!-- layer container for top area (glow, waves, crane, title) -->
+    <FrameLayout
+        android:id="@+id/top_area"
+        android:layout_width="0dp"
+        android:layout_height="340dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- subtle moving radial highlight (vector rotated) -->
+        <ImageView
+            android:id="@+id/glow_big"
+            android:layout_width="360dp"
+            android:layout_height="360dp"
+            android:layout_gravity="center"
+            android:src="@drawable/decor_radial_glow"
+            android:contentDescription="@null"
+            android:translationY="-48dp"
+            android:alpha="0.55"/>
+
+        <!-- diagonal texture overlay for tactile depth -->
+        <ImageView
+            android:id="@+id/diagonal_texture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:src="@drawable/decor_diagonal_stripes"
+            android:contentDescription="@null"
+            android:alpha="0.06"/>
+
+        <!-- top wave detail (keeps original wave look but blended) -->
+        <ImageView
+            android:id="@+id/top_wave"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/bg_top_wave"
+            android:contentDescription="@null"
+            android:alpha="0.28"
+            android:scaleType="centerCrop"/>
+
+        <!-- Logo (keeps center alignment) -->
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="102dp"
+            android:layout_height="90dp"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/logo_circle_bg"
+            android:contentDescription="@string/logo_desc"
+            android:padding="12dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_logo_placeholder"/>
+
+        <!-- Title + crane grouped for overlapping composition -->
+        <FrameLayout
+            android:id="@+id/title_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="150dp">
+
+
+            <!-- Stylish Hindi title - shader & stroke applied in Kotlin for max control -->
+            <TextView
+                android:id="@+id/title_hindi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/app_title_hindi"
+                android:fontFamily="@font/devanagari_stylish"
+                android:importantForAccessibility="yes"
+                android:letterSpacing="0.01"
+                android:text="निर्माण रायपुर"
+                android:textSize="38sp"
+                android:textStyle="bold"
+                android:translationZ="6dp"/>
+
+            <!-- subtle underline / printed card shadow -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginTop="46dp"
+                android:translationY="20dp"
+                android:alpha="0.12"
+                android:background="@color/white"/>
+        </FrameLayout>
+    </FrameLayout>
+
+    <!-- Glassmorphism-style login card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_form"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="260dp"
+        app:cardElevation="18dp"
+        app:cardCornerRadius="18dp"
+        app:cardUseCompatPadding="true"
+        android:background="@drawable/card_glass_bg"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="22dp">
+
+            <TextView
+                android:id="@+id/login_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome, Log in Here"
+                android:textColor="@color/dark_blue"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Space android:layout_width="match_parent" android:layout_height="12dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/idLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Username"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/idInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:inputType="text"
+                    android:imeOptions="actionNext"
+                    android:importantForAutofill="yes"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passwordLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/password_hint"
+                app:endIconMode="password_toggle">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/passwordInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionDone"
+                    android:importantForAutofill="yes"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="16dp"
+                style="@style/Widget.MaterialComponents.Button"
+                android:text="Log in"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_login"
+                app:iconPadding="10dp"
+                app:iconGravity="textStart"
+                app:rippleColor="@color/white_translucent" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

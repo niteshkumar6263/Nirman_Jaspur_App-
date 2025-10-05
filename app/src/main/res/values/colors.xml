@@ -1,0 +1,11 @@
+<resources>
+    <color name="light_blue">#E3F2FF</color>
+    <color name="mid_blue">#67B7FF</color>
+    <color name="dark_blue">#0B5FA5</color>
+    <color name="primary_blue">#0B66D0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="white_translucent">#80FFFFFF</color>
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="white_20">#33FFFFFF</color>
+</resources>
