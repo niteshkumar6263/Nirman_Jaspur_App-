@@ -1,23 +1,261 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_work_progress"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/surface_alt"
+    tools:context=".ui.WorkProgressActivity">
 
-    <TextView
-        android:id="@+id/tvWelcome"
-        android:text="Welcome!"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!-- AppBar / Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+        android:background="@color/primaryDark"
+        app:elevation="6dp">
 
-    <Button
-        android:id="@+id/btnLogout"
-        android:text="Log Out"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_work_progress"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+            app:title="Work Progress"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main content scroll -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:paddingBottom="80dp">
+
+        <LinearLayout
+            android:id="@+id/linear_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Info banner -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/banner_list_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/filter_card_bg">
+
+                <TextView
+                    android:id="@+id/tv_total_count"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    android:text="• List of Work In Progress - Total: 0"
+                    android:textColor="@color/primaryDark"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Welcome row -->
+            <LinearLayout
+                android:id="@+id/header_welcome_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvWelcome"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Welcome"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_primary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogout"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Logout"
+                    android:textAllCaps="false"
+                    android:textColor="@color/primaryDark"
+                    app:strokeColor="@color/primaryDark"
+                    app:iconPadding="4dp"
+                    android:paddingHorizontal="16dp"/>
+            </LinearLayout>
+
+            <!-- Search -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/search_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Search..."
+                android:layout_marginBottom="12dp"
+                app:startIconDrawable="@drawable/ic_search_white"
+                app:startIconTint="@color/primaryDark"
+                app:boxStrokeColor="@color/primary"
+                android:textColorHint="@color/black"
+                android:textColor="@color/black">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_search_global"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:textColor="@color/text_primary"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Filter panel -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/panel_filters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/filter_card_bg"
+                android:padding="14dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_filters_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Filter work items"
+                        android:textColor="@color/filter_card_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- Grid rows -->
+                    <!-- Use @color/text_primary for input text -->
+                    <include
+                        android:id="@+id/includeFilters"
+                        layout="@layout/include_filter_rows" />
+
+
+                    <!-- Action buttons -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="end"
+                        android:layout_marginTop="8dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_apply_filters"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Apply"
+                            android:textAllCaps="false"
+                            android:textColor="@android:color/white"
+                            app:backgroundTint="@color/primaryDark"
+                            app:icon="@drawable/ic_search_white"
+                            app:iconTint="@android:color/white"
+                            android:layout_marginEnd="8dp"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_reset_filters"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Reset"
+                            android:textAllCaps="false"
+                            app:icon="@drawable/ic_refresh"
+                            app:iconTint="@color/primaryDark"
+                            android:textColor="@color/primaryDark"
+                            app:strokeColor="@color/primaryDark"
+                            app:backgroundTint="@android:color/transparent"
+                            android:layout_marginEnd="8dp"/>
+
+                        <ImageButton
+                            android:id="@+id/btn_export"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_download"
+                            app:tint="@color/primaryDark"
+                            android:background="?attr/selectableItemBackgroundBorderless"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- List Header -->
+            <LinearLayout
+                android:id="@+id/list_header"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tv_list_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="List of Work In Progress"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"/>
+
+                <Spinner
+                    android:id="@+id/showEntriesSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_work_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/tv_empty_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No work items found."
+                android:textColorHint="@color/black"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:visibility="gone"
+                android:paddingTop="32dp"
+                android:paddingBottom="32dp"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/fab_add_work"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="20dp"-->
+<!--        app:srcCompat="@drawable/ic_add"-->
+<!--        android:contentDescription="@string/add_work"-->
+<!--        app:backgroundTint="@color/fab_color"-->
+<!--        app:tint="@android:color/white"-->
+<!--        app:layout_anchor="@id/scroll_root"-->
+<!--        app:layout_anchorGravity="bottom|end"-->
+<!--        app:elevation="10dp" />-->
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

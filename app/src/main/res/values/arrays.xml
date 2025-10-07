@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="job_types">
+        <item>--Select job type--</item>
+        <item>construction work</item>
+        <item>Restoration work</item>
+        <item>courtyard renovation</item>
+        <item>Road Repair</item>
+        <item>Drainage</item>
+    </string-array>
+
+    <string-array name="work_departments">
+        <item>--Select work department--</item>
+        <item>PHE</item>
+        <item>PWD</item>
+        <item>Municipal</item>
+    </string-array>
+
+    <string-array name="engineers">
+        <item>--Select Engineer--</item>
+        <item>Eng. Sharma</item>
+        <item>Eng. Verma</item>
+        <item>Eng. Patel</item>
+    </string-array>
+
+    <string-array name="plans">
+        <item>--Select a plan--</item>
+        <item>Plan A</item>
+        <item>Plan B</item>
+    </string-array>
+
+    <string-array name="work_agencies">
+        <item>--Select Work Agency--</item>
+        <item>Rural Mechanical Services</item>
+        <item>Urban Works Agency</item>
+    </string-array>
+
+    <string-array name="areas">
+        <item>--Select area--</item>
+        <item>Area 1</item>
+        <item>Area 2</item>
+    </string-array>
+
+    <string-array name="cities">
+        <item>--Select City--</item>
+        <item>Raipur</item>
+        <item>Abhanpur</item>
+    </string-array>
+
+    <string-array name="wards">
+        <item>--Select Ward--</item>
+        <item>Ward 1</item>
+        <item>Ward 2</item>
+    </string-array>
+
+    <!-- For spinner entries per page -->
+    <string-array name="entries_per_page">
+        <item>10</item>
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
+</resources>

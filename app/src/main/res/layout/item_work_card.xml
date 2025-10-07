@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_work_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    android:layout_marginBottom="12dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:padding="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_thumb"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/work_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/ic_camera" />
+
+        <TextView
+            android:id="@+id/tv_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Construction work"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/iv_thumb"
+            app:layout_constraintTop_toTopOf="@id/iv_thumb"
+            app:layout_constraintEnd_toStartOf="@+id/col_right"
+            android:layout_marginStart="12dp"/>
+
+        <TextView
+            android:id="@+id/tv_year"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="2024-25"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintStart_toStartOf="@id/tv_type"
+            app:layout_constraintTop_toBottomOf="@id/tv_type"
+            app:layout_constraintEnd_toStartOf="@+id/col_right"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Gobra Navapara"
+            android:textSize="13sp"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintStart_toStartOf="@id/tv_type"
+            app:layout_constraintTop_toBottomOf="@id/tv_year"
+            app:layout_constraintEnd_toStartOf="@+id/col_right"
+            android:layout_marginTop="6dp"
+            android:maxLines="2"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/tv_latlong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Lat: , Lng: "
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintStart_toStartOf="@id/tv_location"
+            app:layout_constraintTop_toBottomOf="@id/tv_location"
+            app:layout_constraintEnd_toEndOf="@id/tv_location"
+            android:layout_marginTop="4dp"
+            android:visibility="visible" />
+
+
+        <LinearLayout
+            android:id="@+id/col_right"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="In Progress"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/success_green"
+                android:layout_marginBottom="6dp"/>
+
+            <TextView
+                android:id="@+id/tv_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹ 8.07 Lakh"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <TextView
+                android:id="@+id/tv_last_modified"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="06/10/2025"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="6dp"/>
+
+            <ImageButton
+                android:id="@+id/btn_view"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_visibility"
+                android:contentDescription="@string/view"
+                app:tint="@color/primary"/>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

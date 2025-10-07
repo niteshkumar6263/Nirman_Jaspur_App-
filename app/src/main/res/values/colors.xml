@@ -1,4 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Existing color palette -->
     <color name="light_blue">#E3F2FF</color>
     <color name="mid_blue">#67B7FF</color>
     <color name="dark_blue">#0B5FA5</color>
@@ -8,4 +11,49 @@
     <color name="text_primary">#0F172A</color>
     <color name="text_secondary">#6B7280</color>
     <color name="white_20">#33FFFFFF</color>
+
+    <!-- Base neutral tones -->
+    <color name="gray_50">#FAFAFA</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_600">#757575</color>
+    <color name="blue_800">#1565C0</color>
+    <color name="teal_700">#00796B</color>
+    <color name="blue_700">#1976D2</color>
+    <color name="gray">#9E9E9E</color>
+    <color name="black">#000000</color>
+
+    <!-- New theme colors (for layout compatibility) -->
+    <color name="primaryDark">#0D47A1</color>       <!-- Deep Blue, for toolbar -->
+    <color name="primary">#1565C0</color>           <!-- Medium Blue -->
+    <color name="primaryLight">#5E92F3</color>      <!-- Lighter Blue -->
+    <color name="accent">#29B6F6</color>            <!-- Sky Blue Accent -->
+
+    <!-- Backgrounds -->
+    <color name="background_light">#FFFFFF</color>
+    <color name="background_grey">#F5F5F5</color>
+    <color name="divider">#E0E0E0</color>
+
+    <!-- Text -->
+    <color name="text_light">#FAFAFA</color>
+
+    <!-- Status / Semantic Colors -->
+    <color name="success_green">#4CAF50</color>
+    <color name="warning_orange">#FF9800</color>
+    <color name="error_red">#F44336</color>
+    <color name="info_blue">#2196F3</color>
+
+    <!-- Buttons -->
+    <color name="button_blue">#1E88E5</color>
+    <color name="button_disabled">#BDBDBD</color>
+
+    <!-- Floating Action Button Shadow -->
+    <color name="fab_shadow">#40000000</color>
+
+    <!-- Work Progress screen color additions -->
+    <color name="filter_card_bg">#F1F5F9</color>         <!-- soft gray-blue background for filter panel -->
+    <color name="filter_card_text">#1E293B</color>       <!-- dark slate for filter text -->
+    <color name="fab_color">#0B66D0</color>              <!-- primary blue for floating button -->
+    <color name="surface_alt">#F7F9FB</color>  <!-- very light background for cards -->
+
+
 </resources>
