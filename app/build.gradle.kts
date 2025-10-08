@@ -51,6 +51,14 @@ dependencies {
 
     // Firebase Authentication
     implementation("com.google.firebase:firebase-auth-ktx")
+    // Firebase Storage
+    implementation("com.google.firebase:firebase-storage-ktx")
+
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+
 
     // AndroidX + Material libs
     implementation(libs.androidx.core.ktx)
@@ -59,8 +67,16 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+    implementation("androidx.gridlayout:gridlayout:1.0.0")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+
+    // image loading
+    implementation("io.coil-kt:coil:2.4.0")
+// gson for simple local persistence
+    implementation("com.google.code.gson:gson:2.10.1")
 }

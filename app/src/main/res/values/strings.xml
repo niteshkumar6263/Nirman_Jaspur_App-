@@ -21,4 +21,50 @@
 
     <!-- Small helpers / disclaimers (optional) -->
     <string name="login_disclaimer">This is a government portal UI — keep sensitive information safe.</string>
+
+    <!-- Sample content -->
+    <string name="sample_title">Road Construction — Sector-7</string>
+    <string name="sample_meta">Agency • City • Ward</string>
+
+    <!-- Toolbar -->
+    <string name="title_construction">Construction</string>
+    <string name="ToolbarTitle">ToolbarTitle</string> <!-- optional placeholder -->
+
+    <!-- Content descriptions -->
+    <string name="desc_profile">Profile</string>
+    <string name="filter">Filter</string>
+
+    <!-- Filters / search -->
+    <string name="filters">Filters</string>
+    <string name="tap_to_expand">tap to expand</string>
+    <string name="search_hint">Search...</string>
+    <string name="open_filters">Open Filters</string>
+
+    <!-- Summary -->
+    <string name="list_of_work">• List of Work In Progress - Total: 63</string>
+    <string name="open_details">Open details</string>
+
+    <!-- Image cd -->
+    <string name="image">Image</string>
+
+    <!-- Work Progress -->
+    <string name="title_work_progress">निर्माण - Work In Progress</string>
+    <string name="total_work_progress">Work In Progress की सूची - कुल: 73</string>
+    <string name="choose_work_type">--कार्य के प्रकार चुने--</string>
+    <string name="choose_department">--कार्य विभाग चुने--</string>
+    <string name="choose_engineer">--इंजीनियर चुने--</string>
+    <string name="choose_scheme">--योजना चुने--</string>
+    <string name="choose_city">--शहर चुने--</string>
+    <string name="choose_ward">--वॉर्ड चुने--</string>
+    <string name="choose_area">--क्षेत्र चुने--</string>
+    <string name="search">खोजें</string>
+    <string name="reset">रीसेट</string>
+    <string name="export">एक्सपोर्ट</string>
+
+
+    <string name="add_work">Add work</string>
+    <string name="work_image">Work image</string>
+    <string name="view">View</string>
+    <string name="save_progress">Save Progress &amp; Update Status</string>
+
 </resources>

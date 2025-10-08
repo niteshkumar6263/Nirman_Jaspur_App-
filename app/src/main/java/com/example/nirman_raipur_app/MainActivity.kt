@@ -1,5 +1,6 @@
 package com.example.nirman_raipur_app
 
+import com.example.nirman_raipur_app.ui.WorkProgressActivity
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Intent
@@ -98,26 +99,10 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
         }
-
-        // Forgot password action
-        binding.forgot.setOnClickListener {
-            val email = binding.idInput.text?.toString()?.trim()
-            if (email.isNullOrEmpty()) {
-                Toast.makeText(this, "Enter your email above first", Toast.LENGTH_SHORT).show()
-            } else {
-                auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Password reset link sent!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this, "Failed to send reset email", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
     }
 
     private fun goToHome() {
-        val intent = Intent(this, WorkProgress::class.java)
+        val intent = Intent(this, WorkProgressActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
