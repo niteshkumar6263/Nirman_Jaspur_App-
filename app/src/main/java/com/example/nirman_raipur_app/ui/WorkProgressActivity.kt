@@ -25,13 +25,12 @@ import com.example.nirman_raipur_app.databinding.WorkProgressBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import android.location.Location
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-
-
 
 class WorkProgressActivity : AppCompatActivity() {
 
@@ -55,6 +54,30 @@ class WorkProgressActivity : AppCompatActivity() {
 
     private var currentPhotoWorkId: String? = null
 
+    // ---- NEW: filter state ----
+    // Keep arrays of options (populated in populateFilterDropdowns())
+    private var jobTypes: List<String> = emptyList()
+    private var workDepts: List<String> = emptyList()
+    private var engineers: List<String> = emptyList()
+    private var plans: List<String> = emptyList()
+    private var agencies: List<String> = emptyList()
+    private var areas: List<String> = emptyList()
+    private var cities: List<String> = emptyList()
+    private var wards: List<String> = emptyList()
+
+    // selected flags for multi-choice dialogs (parallel to the above lists)
+    private var jobSelected: BooleanArray = BooleanArray(0)
+    private var deptSelected: BooleanArray = BooleanArray(0)
+    private var engineerSelected: BooleanArray = BooleanArray(0)
+    private var planSelected: BooleanArray = BooleanArray(0)
+    private var agencySelected: BooleanArray = BooleanArray(0)
+    private var areaSelected: BooleanArray = BooleanArray(0)
+    private var citySelected: BooleanArray = BooleanArray(0)
+    private var wardSelected: BooleanArray = BooleanArray(0)
+
+    // filters map: key -> selected values
+    private val filters = mutableMapOf<String, List<String>>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,11 +88,7 @@ class WorkProgressActivity : AppCompatActivity() {
         // init firebase
         auth = FirebaseAuth.getInstance()
 
-//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-//        getLastKnownLocation()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-
 
         // status bar color
         window.statusBarColor = ContextCompat.getColor(this, R.color.primaryDark)
@@ -119,35 +138,81 @@ class WorkProgressActivity : AppCompatActivity() {
         binding.etSearchGlobal.addTextChangedListener { editable ->
             val q = editable?.toString()?.trim()?.lowercase() ?: ""
             if (q.isEmpty()) {
-                submitListAndUpdateUI(allItems)
+                applyFiltersToAdapter() // show filtered by selected filters or all if none
             } else {
-                val filtered = allItems.filter {
+                // combine text search + existing filters
+                val filteredByText = allItems.filter {
                     it.type.lowercase().contains(q) ||
                             it.location.lowercase().contains(q) ||
                             it.year.lowercase().contains(q) ||
                             it.status.lowercase().contains(q)
                 }
-                submitListAndUpdateUI(filtered)
+                // apply selected filters on top of the text-filtered list
+                applyFiltersToAdapter(baseList = filteredByText)
             }
         }
 
-        // Populate simple dropdowns for filters (AutoCompleteTextView)
+        // Populate filter lists and wire adapters
         populateFilterDropdowns()
+
+        // 📅 Date picker setup
+        val dateEditText = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_date)
+        dateEditText?.apply {
+            isFocusable = false
+            isClickable = true
+
+            setOnClickListener {
+                // Use current date or pre-filled date as default
+                val calendar = java.util.Calendar.getInstance()
+
+                // If user already selected a date earlier, show it by default
+                val existingText = text?.toString()?.trim()
+                if (!existingText.isNullOrEmpty() && existingText.matches(Regex("\\d{2}-\\d{2}-\\d{4}"))) {
+                    try {
+                        val parts = existingText.split("-")
+                        val day = parts[0].toInt()
+                        val month = parts[1].toInt() - 1
+                        val year = parts[2].toInt()
+                        calendar.set(year, month, day)
+                    } catch (_: Exception) {
+                        // Ignore parse errors; fallback to current date
+                    }
+                }
+
+                val year = calendar.get(java.util.Calendar.YEAR)
+                val month = calendar.get(java.util.Calendar.MONTH)
+                val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
+
+                // Open DatePickerDialog
+                val datePicker = android.app.DatePickerDialog(
+                    this@WorkProgressActivity,
+                    { _, selectedYear, selectedMonth, selectedDay ->
+                        val formattedDate = String.format("%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear)
+                        setText(formattedDate)
+                    },
+                    year, month, day
+                )
+
+                datePicker.show()
+            }
+        }
+
+
+
+        // Setup multi-select click handlers for available AutoCompleteTextViews
+        wireMultiSelectFilters()
 
         // filter buttons
         binding.btnApplyFilters.setOnClickListener {
-            Toast.makeText(this, "Apply filters (TODO)", Toast.LENGTH_SHORT).show()
+            // apply filters to adapter (explicit apply button still works)
+            applyFiltersToAdapter()
+            Toast.makeText(this, "Filters applied", Toast.LENGTH_SHORT).show()
         }
 
         binding.btnResetFilters.setOnClickListener {
             resetFilters()
             Toast.makeText(this, "Filters reset", Toast.LENGTH_SHORT).show()
         }
-
-//        // FAB
-//        binding.fabAddWork.setOnClickListener {
-//            Toast.makeText(this, "Add Work (TODO)", Toast.LENGTH_SHORT).show()
-//        }
 
         //  Dynamic "Entries per page" dropdown
         val defaultEntries = listOf("10", "25", "50", "100") // default values
@@ -159,8 +224,9 @@ class WorkProgressActivity : AppCompatActivity() {
         binding.showEntriesSpinner.adapter = spinnerAdapter
 
     }
+
     // Open the camera to take a photo
-     fun openCameraAndUpload(workId: String) {
+    fun openCameraAndUpload(workId: String) {
         currentPhotoWorkId = workId
         // Create temporary file to store photo
         photoFile = File.createTempFile(
@@ -187,70 +253,6 @@ class WorkProgressActivity : AppCompatActivity() {
         startCamera.launch(intent)
     }
 
-    // Handle camera result
-//    private val startCamera =
-//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//            if (result.resultCode == Activity.RESULT_OK) {
-//                uploadImageToFirebase(photoUri, lastKnownLocation?.latitude, lastKnownLocation?.longitude)
-//            } else {
-//                Toast.makeText(this, "Camera cancelled", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//
-//    // Upload to Firebase Storage
-//    private fun uploadImageToFirebase(uri: Uri, lat: Double?, lng: Double?) {
-//        // defensive: ensure file exists (if using file:// or FileProvider URIs)
-//        val f = File(uri.path ?: "")
-//        if (!f.exists()) {
-//            Log.e(TAG, "uploadImageToFirebase: file does not exist at uri: $uri (path ${uri.path})")
-//            Toast.makeText(this, "Photo file missing, cannot upload", Toast.LENGTH_LONG).show()
-//            return
-//        }
-//
-//        // If you need to target a specific bucket, do: FirebaseStorage.getInstance("gs://your-bucket.appspot.com").reference
-//        val fileRef = storage.child("work_photos/${System.currentTimeMillis()}.jpg")
-//
-//        Log.d(TAG, "Starting upload to storage path: ${fileRef.path}")
-//
-//        val uploadTask = fileRef.putFile(uri)
-//
-//        // Use continueWithTask to ensure we get downloadUrl only after successful upload
-//        uploadTask.continueWithTask { task ->
-//            if (!task.isSuccessful) {
-//                task.exception?.let { throw it } // propagate error to onFailureListener below
-//            }
-//            // now request download URL
-//            fileRef.downloadUrl
-//        }.addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//                val downloadUrl = task.result
-//                Log.d(TAG, "Upload succeeded. downloadUrl=$downloadUrl")
-//
-//                // show toast and log coordinates
-//                Toast.makeText(this, "Uploaded ✅", Toast.LENGTH_SHORT).show()
-//                Log.d(TAG, "Uploaded photo location -> Lat: $lat, Lng: $lng")
-//
-//                // Update UI / items safely on main thread
-//                runOnUiThread {
-//                    // (example) update first item — adapt to your app logic
-//                    if (allItems.isNotEmpty()) {
-//                        val updatedItem = allItems[0].copy(imageUrl = downloadUrl.toString(), latitude = lat, longitude = lng)
-//                        val newList = allItems.toMutableList().apply { this[0] = updatedItem }
-//                        submitListAndUpdateUI(newList)
-//                    }
-//                }
-//            } else {
-//                Log.e(TAG, "Upload failed", task.exception)
-//                Toast.makeText(this, "Upload failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-//
-//                // optional: check detailed error type
-//                val ex = task.exception
-//                if (ex != null) {
-//                    Log.e(TAG, "Upload exception: ${ex::class.java.name} : ${ex.message}")
-//                }
-//            }
-//        }
-//    }
     @SuppressLint("MissingPermission")
     private val startCamera =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -351,7 +353,6 @@ class WorkProgressActivity : AppCompatActivity() {
         }
     }
 
-
     private fun getLastKnownLocation() {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -380,7 +381,6 @@ class WorkProgressActivity : AppCompatActivity() {
             }
     }
 
-
     /**
      * Loads entries-per-page options dynamically.
      * You can later modify this to fetch from Firebase, SharedPreferences, or server API.
@@ -398,25 +398,41 @@ class WorkProgressActivity : AppCompatActivity() {
         return list
     }
 
-
     private fun submitListAndUpdateUI(list: List<WorkItem>) {
         adapter.submitList(list)
         binding.tvEmptyState.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
         binding.tvTotalCount.text = "•  List of Work In Progress - Total: ${list.size}"
     }
 
+    /**
+     * Populate the AutoComplete lists (and save option arrays for multi-select dialogs)
+     */
     private fun populateFilterDropdowns() {
         // Simple static data for demo — swap with real data source later
-        val jobTypes = listOf("All", "Construction", "Road", "Drainage", "Park")
-        val workDepts = listOf("All", "PHE", "PWD", "Municipal")
-        val engineers = listOf("All", "Eng. Sharma", "Eng. Verma", "Eng. Patel")
-        val plans = listOf("All", "Plan A", "Plan B")
-        val agencies = listOf("All", "Agency 1", "Agency 2")
-        val areas = listOf("All", "Area 1", "Area 2")
-        val cities = listOf("All", "Raipur", "Abhanpur")
-        val wards = listOf("All", "Ward 1", "Ward 2")
+        jobTypes = listOf("All", "Construction work", "Restoration work", "Courtyard renovation")
+        workDepts = listOf("All", "Scheduled Caste Development Authority", "Education Department", "General Administration Department", "Panchayat and Rural Development Department")
+        engineers = listOf("All", "Mrs. Shraddha Kushwaha (Engineer)", "Praveen Kumar Sinha (Engineer)", "Gopi Ram Verma (Engineer)", "Pradip Sahu (Engineer)", "Tika Ram Sahu (Engineer)", "Amitesh Gupta (Engineer)", "Kamlesh Chandrakar (Engineer)", "Surya Kumar Sonkar (Engineer)", "Dinesh Bisen (Engineer)", "Dinesh Netam (Engineer)", "Vikas Nayak (Engineer)", "Prateek Singh (Engineer)", "Vikas Gupta (Engineer)", "P.L.Miri (Engineer)", "Mukund Sahu (Engineer)", "Sunita Harde (Engineer)", "Arun Kumar Banwasi (Engineer)", "Divyansh Sharma (Engineer)"
+        )
+        plans = listOf("All", "National Secondary Education Mission (Samagra Shiksha)", "District Mineral Trust (DMF)", "Swachh Bharat Mission Rural Scheme", "Health Services", "CSR Item", "Women and Child Development Department (Vatsalya Scheme)", "MLA Fund", "Mahatari Sadan Scheme", "Panchayat and State Rural Development Institute, Nimora", "P.M.Shri", "Scheduled Caste Development Authority (Tribal Development)", "Chief Minister's Announcement Item"
+        )
+        agencies = listOf("All", "Agency 1", "Agency 2")
+        areas = listOf("All", "Raipur", "Arang", "Abhanpur", "Tilda", "Dharsiwa"
+        )
+        cities = listOf("All", "Raipur", "Abhanpur")
+        wards = listOf("All", "Fundhar", "Rewa", "Corac", "Bhandarpuri", "Ganoud", "Bhansoj", "Lakhauli", "Bhothli", "Amsena", "Arang", "Nemora", "Gatapar", "Bendri", "Gobra Navapara", "Abhanpur", "Khorpa", "Mundra", "Sarora", "Basil", "Budyonny", "Saragaon", "Sarakh", "Dharsiwa", "Kandul", "Kathadih", "Datrenga", "Chandkhuri", "Tekari", "Swamp Suture", "Mana Basti", "Dondekala", "Parastarai", "Temari", "Serikhedi", "Dehpara Giraud", "Nevra", "Kharora", "Sirve", "Birgaon", "Ratakat", "Farfraud", "Benideh", "Deori", "Majitha", "Acholi", "Ceja", "Gukhera", "Ranisagar", "Chaprid", "Kosrangi", "Chhatauna", "Gullu", "Nardaha", "Raipur", "Profiteer", "Khamhardih", "Adarsh Nagar Raipur", "Zora", "Akolikala (Bhau)", "Godhi", "Buffalo", "Rakhi", "Bana", "Parsada (Umaria)", "Rico", "Kusmunda"
+        )
 
-        // Use safe lookup by id-name so this file compiles even when inner AutoCompleteTextViews aren't present in layout.
+        // initialize boolean selection arrays
+        jobSelected = BooleanArray(jobTypes.size)
+        deptSelected = BooleanArray(workDepts.size)
+        engineerSelected = BooleanArray(engineers.size)
+        planSelected = BooleanArray(plans.size)
+        agencySelected = BooleanArray(agencies.size)
+        areaSelected = BooleanArray(areas.size)
+        citySelected = BooleanArray(cities.size)
+        wardSelected = BooleanArray(wards.size)
+
+        // Fill the simple AutoCompleteTextView adapters (so dropdown arrow still shows)
         safeSetAutoComplete("jobTypeSpinner", jobTypes)
         safeSetAutoComplete("workDepartmentSpinner", workDepts)
         safeSetAutoComplete("engineerSpinner", engineers)
@@ -425,6 +441,109 @@ class WorkProgressActivity : AppCompatActivity() {
         safeSetAutoComplete("areaSpinner", areas)
         safeSetAutoComplete("citySpinner", cities)
         safeSetAutoComplete("wardSpinner", wards)
+    }
+
+    /**
+     * Wire the AutoCompleteTextViews to open a multi-choice dialog when clicked.
+     * Uses the same safe lookup pattern.
+     */
+    private fun wireMultiSelectFilters() {
+        safeSetMultiSelect("jobTypeSpinner", jobTypes, jobSelected) { chosen ->
+            filters["jobType"] = chosen
+            applyFiltersToAdapter()
+        }
+        safeSetMultiSelect("workDepartmentSpinner", workDepts, deptSelected) { chosen ->
+            filters["workDepartment"] = chosen
+            applyFiltersToAdapter()
+        }
+        safeSetMultiSelect("engineerSpinner", engineers, engineerSelected) { chosen ->
+            filters["engineer"] = chosen
+            applyFiltersToAdapter()
+        }
+        safeSetMultiSelect("planSpinner", plans, planSelected) { chosen ->
+            filters["plan"] = chosen
+            applyFiltersToAdapter()
+        }
+        safeSetMultiSelect("workAgencySpinner", agencies, agencySelected) { chosen ->
+            filters["agency"] = chosen
+            applyFiltersToAdapter()
+        }
+        safeSetMultiSelect("areaSpinner", areas, areaSelected) { chosen ->
+            filters["area"] = chosen
+            applyFiltersToAdapter()
+        }
+        safeSetMultiSelect("citySpinner", cities, citySelected) { chosen ->
+            filters["city"] = chosen
+            applyFiltersToAdapter()
+        }
+        safeSetMultiSelect("wardSpinner", wards, wardSelected) { chosen ->
+            filters["ward"] = chosen
+            applyFiltersToAdapter()
+        }
+    }
+
+    /**
+     * Helper: find AutoCompleteTextView by idName and attach a click listener which shows a multi-choice dialog.
+     */
+    private fun safeSetMultiSelect(idName: String, items: List<String>, selectedArr: BooleanArray, onConfirmed: (List<String>) -> Unit) {
+        val resId = resources.getIdentifier(idName, "id", packageName)
+        if (resId == 0) {
+            Log.d(TAG, "safeSetMultiSelect: id not found -> $idName")
+            return
+        }
+        val view = findViewById<AutoCompleteTextView?>(resId)
+        if (view == null) {
+            Log.d(TAG, "safeSetMultiSelect: view lookup returned null for id -> $idName")
+            return
+        }
+
+        // Make it non-focusable to avoid keyboard and keep it clickable
+        view.isFocusable = false
+        view.isClickable = true
+
+        // Show a Material multi-choice dialog
+        view.setOnClickListener {
+            showMultiChoiceDialog(
+                title = view.hint?.toString() ?: "-- Select --",
+                options = items.toTypedArray(),
+                initiallySelected = selectedArr
+            ) { chosenList ->
+                // Update the AutoCompleteTextView display (comma-separated) and update boolean selection array
+                view.setText(if (chosenList.isEmpty()) "" else chosenList.joinToString(", "), false)
+                items.forEachIndexed { i, opt -> selectedArr[i] = chosenList.contains(opt) }
+                // callback to update filters & adapter
+                onConfirmed(chosenList)
+            }
+        }
+    }
+
+    /**
+     * Show a Material multi-choice dialog (checkbox list)
+     */
+    private fun showMultiChoiceDialog(
+        title: String,
+        options: Array<String>,
+        initiallySelected: BooleanArray? = null,
+        onSelectionConfirmed: (selected: List<String>) -> Unit
+    ) {
+        val selected = BooleanArray(options.size) { i ->
+            initiallySelected?.getOrNull(i) ?: false
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(title)
+            .setMultiChoiceItems(options, selected) { _, which, isChecked ->
+                selected[which] = isChecked
+            }
+            .setPositiveButton("OK") { _, _ ->
+                val chosen = options
+                    .indices
+                    .filter { selected[it] }
+                    .map { options[it] }
+                onSelectionConfirmed(chosen)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun safeSetAutoComplete(idName: String, items: List<String>) {
@@ -438,7 +557,7 @@ class WorkProgressActivity : AppCompatActivity() {
         if (view != null) {
             val a = ArrayAdapter(this, android.R.layout.simple_list_item_1, items)
             view.setAdapter(a)
-            view.setText(items.first(), false)
+            view.setText(items.firstOrNull() ?: "", false)
         } else {
             Log.d(TAG, "safeSetAutoComplete: view lookup returned null for id -> $idName")
         }
@@ -452,11 +571,84 @@ class WorkProgressActivity : AppCompatActivity() {
 
     private fun resetFilters() {
         // reset only if the views exist; safeSetAutoComplete will silently skip non-existent ids
-        safeSetAutoComplete(idName = "jobTypeSpinner", items = listOf("All", "Construction", "Road", "Drainage", "Park"))
-        safeSetAutoComplete(idName = "workDepartmentSpinner", items = listOf("All", "PHE", "PWD", "Municipal"))
+        populateFilterDropdowns() // reset lists and selections to defaults (All)
+        // clear each AutoCompleteTextView text if present
+        safeClearText("jobTypeSpinner")
+        safeClearText("workDepartmentSpinner")
+        safeClearText("engineerSpinner")
+        safeClearText("planSpinner")
+        safeClearText("workAgencySpinner")
+        safeClearText("areaSpinner")
+        safeClearText("citySpinner")
+        safeClearText("wardSpinner")
+
         // clear date field if present
-        binding.root.findViewById<com.google.android.material.textfield.TextInputEditText?>(R.id.et_date)
+        binding.root.findViewById<TextInputEditText?>(R.id.et_date)
             ?.setText("")
+
+        // clear filters map and re-apply (show all)
+        filters.clear()
+        applyFiltersToAdapter()
+    }
+
+    private fun safeClearText(idName: String) {
+        val resId = resources.getIdentifier(idName, "id", packageName)
+        if (resId == 0) return
+        val view = findViewById<AutoCompleteTextView?>(resId)
+        view?.setText("", false)
+    }
+
+    /**
+     * Apply the currently selected filters to the adapter.
+     * If baseList is provided, filter that list; otherwise start from allItems.
+     */
+    private fun applyFiltersToAdapter(baseList: List<WorkItem>? = null) {
+        val listToFilter = baseList ?: allItems
+
+        // If no filters selected -> show base list
+        if (filters.values.all { it.isEmpty() }) {
+            submitListAndUpdateUI(listToFilter)
+            return
+        }
+
+        val filtered = listToFilter.filter { item ->
+            // Each filter must match OR be empty. Adapt item field names to your WorkItem.
+            val jobOk = filters["jobType"].let { sel ->
+                sel == null || sel.isEmpty() || sel.contains(item.type) || sel.contains("All")
+            } ?: true
+
+            val deptOk = filters["workDepartment"].let { sel ->
+                sel == null || sel.isEmpty() || sel.contains(item.workDepartment ?: "") || sel.contains("All")
+            } ?: true
+
+            val engineerOk = filters["engineer"].let { sel ->
+                sel == null || sel.isEmpty() || sel.contains(item.engineer ?: "") || sel.contains("All")
+            } ?: true
+
+            val planOk = filters["plan"].let { sel ->
+                sel == null || sel.isEmpty() || sel.contains(item.plan ?: "") || sel.contains("All")
+            } ?: true
+
+            val agencyOk = filters["agency"].let { sel ->
+                sel == null || sel.isEmpty() || sel.contains(item.workAgency ?: "") || sel.contains("All")
+            } ?: true
+
+            val areaOk = filters["area"].let { sel ->
+                sel == null || sel.isEmpty() || sel.contains(item.area ?: "") || sel.contains("All")
+            } ?: true
+
+            val cityOk = filters["city"].let { sel ->
+                sel == null || sel.isEmpty() || sel.contains(item.city ?: "") || sel.contains("All")
+            } ?: true
+
+            val wardOk = filters["ward"].let { sel ->
+                sel == null || sel.isEmpty() || sel.contains(item.ward ?: "") || sel.contains("All")
+            } ?: true
+
+            jobOk && deptOk && engineerOk && planOk && agencyOk && areaOk && cityOk && wardOk
+        }
+
+        submitListAndUpdateUI(filtered)
     }
 
 }
